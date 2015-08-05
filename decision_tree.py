@@ -1,3 +1,5 @@
+import operator
+
 class Node:
 
     def __init__(self):
@@ -46,7 +48,9 @@ class DecisionTree:
         for number in self.numbers:
             self.add_node(self.node_root, number, 0)
 
-            print "line:", line
+            if line % 100 == 0:
+                print "line:", line
+
             line += 1
 
     def add_node(self, node_parent, number, number_col):
@@ -66,3 +70,21 @@ class DecisionTree:
             node_parent.add_node(node)
 
         self.add_node(node, number, number_col + 1)
+
+    def get_label(self, pixels):
+        node = self.search_pixel_node(self.node_root, pixels, 0)
+        sorted_labels = sorted(node.labels.items(), key=operator.itemgetter(1))
+        return sorted_labels[::-1][0][0]
+
+    def get_label_node(self, pixels):
+        node = self.search_pixel_node(self.node_root, pixels, 0)
+        return node
+
+    def search_pixel_node(self, node, pixels, pixel_col):
+        pixel = pixels[pixel_col]
+
+        if (pixel in node.nodes) and (pixel_col < self.len_pixels - 1):
+            return self.search_pixel_node(node.nodes[pixel], pixels, pixel_col + 1)
+        else:
+            return node
+
